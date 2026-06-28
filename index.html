@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OUSL Past Paper Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<a href="https://wa.me/94784293548?text=Hi%20Admin,%20I%20need%20help%20with%20the%20Past%20Paper%20Portal." target="_blank" class="whatsapp-floating-btn" id="whatsappHelpBtn" style="display: none;">
+    <i class="fa-brands fa-whatsapp"></i> <span>Help Center</span>
+</a>
+
+    <div id="authContainer" class="auth-container">
+        <div class="auth-box">
+            <h2 id="authTitle">Portal Login</h2>
+            <form id="authForm" onsubmit="handleAuth(event)">
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" id="auth_user" required placeholder="Enter username">
+                </div>
+                
+                <div class="form-group" id="contactGroup" style="display: none;">
+                    <label>Email / Phone No</label>
+                    <input type="text" id="auth_contact" placeholder="Enter Email or Phone Number">
+                </div>
+
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="auth_pass" required placeholder="Enter password">
+                </div>
+
+                <button type="submit" id="authBtn" class="download-btn" style="width:100%; justify-content:center; margin-top:10px;">Login</button>
+            </form>
+            
+            <p id="authStatus" style="text-align:center; margin-top:10px; font-weight: bold;"></p>
+            
+            <div class="auth-footer-links" style="text-align:center; margin-top:15px; font-size:0.9em; color:var(--text-muted);">
+                <p>
+                    <span id="toggleAuthText">Don't have an account?</span> 
+                    <a href="#" onclick="toggleAuthMode()" id="toggleAuthLink" style="color:var(--accent-blue); text-decoration:none; font-weight:bold;"> Register here</a>
+                </p>
+                <p style="margin-top: 10px;">
+                    <a href="#" onclick="handleForgotPassword()" style="color: #f87171; text-decoration:none; font-weight:500;"><i class="fa-solid fa-key"></i> Forgot Password?</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div id="mainPortal" style="display: none;">
+        <header>
+            <h1><i class="fa-solid fa-graduation-cap"></i> OUSL Past Paper Portal</h1>
+            <p>Find and download university past papers easily.</p>
+
+            <div class="nav-controls">
+                <button class="portal-nav-btn" onclick="renderBookmarks()"><i class="fa-solid fa-star" style="color: #f59e0b;"></i> My Bookmarks</button>
+                <button class="secret-admin-trigger" id="adminLockBtn" onclick="openAdmin()" style="display: none;"><i class="fa-solid fa-lock"></i> Admin Panel</button>
+                <button class="portal-nav-btn logout-btn" onclick="handleLogout()"><i class="fa-solid fa-right-from-bracket"></i></button>
+            </div>
+            
+            <div id="noticeBoard" class="notice-board-container" style="display: none;"></div>
+
+            <div class="search-container" id="searchWrapper">
+                <input type="text" id="searchBar" placeholder="Type Course Code (e.g., EEI3346)..." onkeyup="debouncedSearch()">
+            </div>
+        </header>
+
+        <main id="appContent"></main>
+    </div>
+    
+    <footer>
+        <div class="disclaimer-note" style="max-width: 1000px; margin: 20px auto 0 auto; padding: 15px; font-size: 0.85em; color: #94a3b8; border-top: 1px solid #1e293b; text-align: center; line-height: 1.6;">
+            <i class="fa-solid fa-scale-balanced" style="margin-right: 5px; color: #f59e0b;"></i>
+            <strong>Disclaimer:</strong> This portal is an independent educational platform created to help OUSL students find past papers easily. It is NOT affiliated with, authorized, or officially connected to the Open University of Sri Lanka (OUSL). All question papers belong to their respective university authorities.
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
