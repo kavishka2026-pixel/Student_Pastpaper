@@ -1,5 +1,5 @@
-// Navin AppScript Web App URL 
-const API_URL = "https://script.google.com/macros/s/AKfycbwejrGuxEBtUVBu9-z9xEVi8KseUUWVddIenUAC6mua8zfEZxxv8CbbBo2Ckf29GldkxQ/exec"; 
+// Navin AppScript Web App URL (මෙතනට ඔයාගේ අලුත් AppScript Web App URL එක දාන්න)
+const API_URL = "https://script.google.com/macros/s/AKfycbyJqrXqoUYPXiWCD287WvdiX6NBMBbbZgOrOzTojVbGZLhKArfNoXgC1PwHk_wHZGK0Iw/exec"; 
 
 let siteData = { papers: [], notices: [] }; 
 let currentUser = "";
@@ -397,7 +397,12 @@ async function handleAuth(event) {
                 currentUser = user;
                 currentUserPassword = pass; // SECURITY: Keep for backend validation
                 currentUserRole = result.role || "user";
-                currentUserBookmarks = result.bookmarks ? JSON.parse(result.bookmarks) : [];
+                
+                try {
+                    currentUserBookmarks = result.bookmarks ? JSON.parse(result.bookmarks) : [];
+                } catch(e) {
+                    currentUserBookmarks = [];
+                }
                 
                 setTimeout(() => {
                     document.getElementById('authContainer').style.display = 'none';
@@ -479,13 +484,13 @@ async function fetchUsers() {
             body: JSON.stringify({ 
                 action: "getUsers",
                 username: currentUser, 
-                password: currentUserPassword // Backend validation
+                password: currentUserPassword 
             }) 
         });
         let data = await res.json();
         
         if(data.status === "error") {
-            document.getElementById('adminViewArea').innerHTML = `<p style='color:red;'>${data.message}</p>`;
+            document.getElementById('adminViewArea').innerHTML = `<p style='color:#f87171; text-align:center;'>Error: ${data.message}</p>`;
             return;
         }
 
@@ -515,17 +520,27 @@ async function fetchUsers() {
 
 async function deleteUser(targetUsername) {
     if(confirm(`Are you sure you want to delete ${targetUsername}?`)) {
-        await fetch(API_URL, { 
-            method: 'POST', 
-            body: JSON.stringify({ 
-                action: "deleteUser", 
-                targetUser: targetUsername,
-                username: currentUser, 
-                password: currentUserPassword // Backend validation
-            }) 
-        });
-        alert("Action Completed!");
-        fetchUsers();
+        try {
+            let res = await fetch(API_URL, { 
+                method: 'POST', 
+                body: JSON.stringify({ 
+                    action: "deleteUser", 
+                    targetUser: targetUsername,
+                    username: currentUser, 
+                    password: currentUserPassword 
+                }) 
+            });
+            let result = await res.json();
+            
+            if (result.status === "success") {
+                alert("User deleted successfully!");
+                fetchUsers();
+            } else {
+                alert("Error: " + result.message);
+            }
+        } catch(e) {
+            alert("Network Error!");
+        }
     }
 }
 
@@ -546,8 +561,8 @@ async function submitNewPaper() {
     let payload = {
         action: "adminPaper",
         method: "add",
-        username: currentUser, // Backend validation
-        password: currentUserPassword, // Backend validation
+        username: currentUser, 
+        password: currentUserPassword, 
         faculty: document.getElementById('p_fac').value,
         programme: document.getElementById('p_prog').value,
         level: document.getElementById('p_level').value,
@@ -565,16 +580,17 @@ async function submitNewPaper() {
     
     try {
         let res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
-        let data = await res.json();
+        let result = await res.json();
         
-        if(data.status === "error") {
-            alert("Error: " + data.message);
-        } else {
+        if (result.status === "success") {
             alert("Paper Added Successfully!");
+            fetchPapersFromDatabase();
+        } else {
+            alert("Error: " + result.message);
+            showAddPaperForm();
         }
-    } catch(e) {
-        alert("Error connecting to server.");
+    } catch (e) {
+        alert("Network Error while submitting!");
+        showAddPaperForm();
     }
-    
-    fetchPapersFromDatabase();
 }
